@@ -12,11 +12,14 @@ def home(request):
     note_contents = ""
     
     if request.user.is_authenticated():
-        result = request.user.get_profile()
-        if result:
+        try:
+            result = request.user.get_profile()
             document_id = result.document_id
-        else:
+        except:
             document_id = 1
+            result= UserProfile(user = request.user, document_id = document_id)
+            result.save()
+            
         
         result = Note.objects.filter(username=request.user, document_id=document_id)
         if result:
