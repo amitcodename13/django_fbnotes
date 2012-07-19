@@ -1,0 +1,120 @@
+<html>
+	<head>
+		<LINK REL=StyleSheet HREF="{{ STATIC_URL }}css/style.css" TYPE="text/css" MEDIA=screen>
+		<title> Facebook Notes - Easy way to save notes </title>
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#xfbml=1&appId=402374726491552";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+		<script type="text/javascript" src="{{ STATIC_URL }}scripts/jquery.min.js"></script>
+
+		<script type="text/javascript">
+			document_loaded = false
+			$(document).ready(function() {
+				$("#ajax_status").text("Note " +  $("#note_selected").text() + " successfully loaded on " + Date());
+				$(".noteselect").each(function(i) {
+					if(this.innerHTML == $("#note_selected").text()) {
+						$(this).addClass("orange")
+						$(this).removeClass("blue")
+					}
+				})
+				
+				$("#note_contents").ajaxStart(function() { 
+        				$("#note_contents").addClass("loading"); 
+    			})
+    			
+				$("#note_contents").ajaxStop(function() { 
+        				$("#note_contents").removeClass("loading"); 
+    			})
+    			$("#note_title").ajaxStart(function() { 
+        				$("#note_title").addClass("loading_noimage"); 
+    			})
+    			
+				$("#note_title").ajaxStop(function() { 
+        				$("#note_title").removeClass("loading_noimage"); 
+    			})
+    				
+			    $('#like').delay(500).fadeIn(500,function(){ $(this).css({'height':"inherit",'overflow':"inherit"}); });
+				$(".noteselect").click(function(event) {
+					var request  = $.ajax({
+						type: "GET",
+						url: "note",
+						data: {
+							"document_id": event.target.innerHTML,
+						},
+						success: function(a, b, c) {
+							var json = eval("(" + a + ")")
+							$("#note_contents").val(json["contents"])
+							$("#note_title").val(json["title"])
+							$("#note_selected").val(event.target.innerHTML)
+							$(".noteselect").removeClass("orange")
+							$(".noteselect").addClass("blue")
+							event.target.className = "noteselect button orange"
+							$("#ajax_status").text("Note " +  event.target.innerHTML + " successfully loaded on " + Date());
+						
+						}
+					})
+				})
+				
+				$("#note_save").click(function(event) {
+					 var request = $.ajax({
+						type: "GET",
+						url: "save",
+						data: {
+							"document_id": $("#note_selected").val(),
+							"contents": $("#note_contents").val(),
+							"title": $("#note_title").val(),
+						},
+						success: function(a, b, c) {
+							$("#ajax_status").text("Note " +  $("#note_selected").val() + " successfully saved on " + Date());
+						}
+					})
+				})
+			})
+		</script>
+	</head>
+	
+	<body>
+		<div id="top_panel">
+		<ul>
+		{% if user.is_authenticated %}
+			<li class="greetings">Welcome {{ user }}
+			<li><a id="logout_button" href="/logout" class="blue">Logout</a>
+		{% else %}
+			<li><a href="{% url socialauth_begin 'facebook' %}" class="">Login using facebook</a>
+		{% endif %}
+		<li>
+		<div style="display:block;float:left;width:450px;min-height:35px;">
+    	<div id="like" style="display:none;float:left;width:450px;height:35px;overflow:hidden;">
+		<div class="fb-like" data-href="http://www.facebook.com/pages/Fbnotes-Community/266304003469791" data-send="false" data-width="450" data-show-faces="false"></div>
+    	</div>
+		</div>
+		</ul>
+		</div>
+		<div id="block_center">
+		<input id="note_title" class="styledinp" type=text value="{{ note_title }}">
+		<textarea id="note_contents" class="styledinp">{{ note_contents }}</textarea>
+		<div id="ns_parent">
+			<span id="note_save" class="button green">Save</span>
+			<span class="noteselect button blue">1</span>
+			<span class="noteselect button blue">2</span>
+			<span class="noteselect button blue">3</span>
+			<span class="noteselect button blue">4</span>
+			<span class="noteselect button blue">5</span>
+			<span class="noteselect button blue">6</span>
+			<span class="noteselect button blue">7</span>
+			<span class="noteselect button blue">8</span>
+			<span class="noteselect button blue">9</span>
+			<span class="noteselect button blue">10</span>
+			{<span id="ajax_status">Save successful</span>}
+		</div>
+		
+		<span id="note_selected" type="text" value="{{ note_selected }}" hidden=true>{{ note_selected }}</span>
+		</div>
+	</body>
+</html>
