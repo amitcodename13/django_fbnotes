@@ -1,6 +1,6 @@
 <html>
 	<head>
-		<LINK REL=StyleSheet HREF="{{ STATIC_URL }}css/style.css" TYPE="text/css" MEDIA=screen>
+		<link rel=stylesheet href="{{ STATIC_URL }}css/style.css" TYPE="text/css" MEDIA=screen></link>
 		<title> Facebook Notes - Easy way to save notes </title>
 		<div id="fb-root"></div>
 		<script>
@@ -75,12 +75,12 @@
 						type : "GET",
 						url : "save",
 						data : {
-							"document_id" : $("#note_selected").val(),
+							"document_id" : $("#note_selected").html(),
 							"contents" : $("#note_contents").val(),
 							"title" : $("#note_title").val(),
 						},
 						success : function(a, b, c) {
-							$("#ajax_status").text("Note " + $("#note_selected").val() + " successfully saved on " + Date());
+							$("#ajax_status").text("Note " + $("#note_selected").html() + " successfully saved on " + Date());
 						}
 					})
 				})
