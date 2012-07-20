@@ -18,7 +18,7 @@ def home(request):
         except:
             document_id = 1
             result= UserProfile(user = request.user, document_id = document_id)
-            result.save()
+        result.save()
             
         
         result = Note.objects.filter(username=request.user, document_id=document_id)
